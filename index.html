@@ -138,6 +138,131 @@
             color: #2980b9;
             font-weight: normal;
         }
+
+        /* بخش‌های راهنما و درباره برنامه */
+        .extra-sections {
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        .extra-sections details {
+            margin-bottom: 12px;
+            border: 1px solid #e1e7eb;
+            border-radius: 8px;
+            background: #fafcfd;
+            overflow: hidden;
+        }
+
+        .extra-sections summary {
+            padding: 14px 16px;
+            color: #2c3e50;
+            font-weight: bold;
+            cursor: pointer;
+            background: #f4f8fa;
+            user-select: none;
+        }
+
+        .extra-sections summary:hover {
+            background: #eaf2f7;
+        }
+
+        .details-content {
+            padding: 15px 18px;
+            color: #5f6f78;
+            font-size: 0.9rem;
+            line-height: 2.1;
+        }
+
+        .details-content ul {
+            margin: 8px 0;
+            padding-right: 22px;
+        }
+
+        .details-content li {
+            margin-bottom: 5px;
+        }
+
+        .about-list {
+            list-style: none;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .about-list li {
+            padding: 5px 0;
+            border-bottom: 1px dashed #dfe6e9;
+        }
+
+        .about-list li:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-form {
+            margin-top: 10px;
+        }
+
+        .suggestion-form label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-size: 0.9rem;
+        }
+
+        .suggestion-form textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            resize: vertical;
+            border: 1px solid #bdc3c7;
+            border-radius: 7px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .suggestion-form textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+        }
+
+        .suggestion-form button {
+            margin-top: 10px;
+            padding: 9px 18px;
+            font-size: 0.9rem;
+        }
+
+        .suggestion-note {
+            margin-top: 8px;
+            color: #95a5a6;
+            font-size: 0.78rem;
+            line-height: 1.8;
+        }
+
+        #suggestionStatus {
+            margin-top: 10px;
+            color: #27ae60;
+            font-size: 0.85rem;
+        }
+
+        .contact-info {
+            background: #f9fbfc;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border-right: 4px solid #3498db;
+            margin-top: 10px;
+            direction: ltr;
+            text-align: right;
+        }
+
+        .contact-info a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -173,6 +298,150 @@
         </div>
 
         <div id="status"></div>
+
+        <!-- بخش‌های راهنما، درباره و پیشنهادات -->
+        <div class="extra-sections">
+
+            <!-- راهنمای استفاده -->
+            <details>
+                <summary>📘 راهنمای استفاده</summary>
+
+                <div class="details-content">
+                    <ul>
+                        <li>
+                            ابتدا سال شمسی موردنظر را در کادر سال وارد کنید.
+                        </li>
+
+                        <li>
+                            روی دکمه‌ی
+                            <strong>«انتخاب پوشه و شروع ساخت»</strong>
+                            کلیک کنید.
+                        </li>
+
+                        <li>
+                            پوشه‌ی مقصد را از پنجره‌ی بازشده انتخاب کنید.
+                        </li>
+
+                        <li>
+                            برنامه داخل پوشه‌ی انتخاب‌شده، یک فولدر با نام سال
+                            ایجاد می‌کند.
+                        </li>
+
+                        <li>
+                            داخل فولدر سال، فولدرهای ۱۲ ماه ساخته می‌شوند.
+                        </li>
+
+                        <li>
+                            داخل هر ماه، فولدر تمام روزهای آن ماه با نام تاریخ و
+                            روز هفته ایجاد خواهد شد.
+                        </li>
+
+                        <li>
+                            داخل هر روز نیز دو فولدر زیر ساخته می‌شود:
+                            <br>
+                            <strong>کارهای انجام شده</strong>
+                            <br>
+                            <strong>کارهای در دست اقدام</strong>
+                        </li>
+                    </ul>
+
+                    <p>
+                        در هنگام ساخت فولدرها، نوار پیشرفت تعداد روزهای ایجادشده
+                        و درصد پیشرفت را نمایش می‌دهد.
+                    </p>
+                </div>
+            </details>
+
+            <!-- درباره برنامه -->
+            <details>
+                <summary>ℹ️ درباره برنامه</summary>
+
+                <div class="details-content">
+                    <p>
+                        این برنامه برای ایجاد خودکار ساختار فولدرهای سال شمسی
+                        طراحی شده است.
+                    </p>
+
+                    <ul class="about-list">
+                        <li>
+                            <strong>نوع برنامه:</strong>
+                            ابزار مدیریت فولدرهای تقویم شمسی
+                        </li>
+
+                        <li>
+                            <strong>تقویم مورد استفاده:</strong>
+                            تقویم جلالی
+                        </li>
+
+                        <li>
+                            <strong>محل ذخیره‌سازی:</strong>
+                            مستقیماً در پوشه‌ای که کاربر انتخاب می‌کند
+                        </li>
+
+                        <li>
+                            <strong>حریم خصوصی:</strong>
+                            هیچ فایلی به سرور ارسال نمی‌شود و عملیات ساخت فولدرها
+                            روی رایانه‌ی خود کاربر انجام می‌گیرد.
+                        </li>
+
+                        <li>
+                            <strong>مرورگر پیشنهادی:</strong>
+                            Google Chrome یا Microsoft Edge
+                        </li>
+                    </ul>
+
+                    <!-- اطلاعات تماس -->
+                    <div class="contact-info">
+                        <strong>ایمیل:</strong>
+                        <a href="mailto:mosayeb872@gmail.com">mosayeb872@gmail.com</a>
+                        <br>
+                        <strong>تلفن همراه:</strong>
+                        <a href="tel:+989173206052">+98 917 320 6052</a>
+                    </div>
+                </div>
+            </details>
+
+            <!-- پیشنهادات کاربران -->
+            <details>
+                <summary>💡 ارسال پیشنهاد و نظر</summary>
+
+                <div class="details-content">
+                    <p>
+                        اگر پیشنهادی برای بهترشدن برنامه دارید، نظر خود را
+                        برای ما ارسال کنید.
+                    </p>
+
+                    <div class="suggestion-form">
+                        <label for="suggestion">
+                            پیشنهاد یا توضیحات شما:
+                        </label>
+
+                        <textarea
+                            id="suggestion"
+                            placeholder="مثلاً: امکان انتخاب نام فولدرها اضافه شود..."
+                        ></textarea>
+
+                        <button
+                            type="button"
+                            onclick="sendSuggestion()"
+                        >
+                            ارسال پیشنهاد
+                        </button>
+
+                        <div id="suggestionStatus"></div>
+
+                        <div class="suggestion-note">
+                            با کلیک روی دکمه، برنامه‌ی ایمیل پیش‌فرض شما باز می‌شود.
+                            پیام شما به آدرس
+                            <strong>mosayeb872@gmail.com</strong>
+                            ارسال می‌شود.
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+        </div>
+
     </div>
 
     <script>
@@ -606,6 +875,46 @@
                 pickBtn.disabled = false;
                 progressEl.style.display = "none";
             }
+        }
+
+        // تابع ارسال پیشنهاد از طریق ایمیل
+        function sendSuggestion() {
+            const suggestionEl =
+                document.getElementById("suggestion");
+
+            const suggestionStatus =
+                document.getElementById("suggestionStatus");
+
+            const message =
+                suggestionEl.value.trim();
+
+            if (!message) {
+                suggestionStatus.style.color = "#e74c3c";
+                suggestionStatus.textContent =
+                    "لطفاً ابتدا پیشنهاد یا نظر خود را وارد کنید.";
+                return;
+            }
+
+            // ایمیل مقصد
+            const receiverEmail =
+                "mosayeb872@gmail.com";
+
+            const subject =
+                encodeURIComponent("پیشنهاد درباره برنامه ساخت فولدرهای شمسی");
+
+            const body =
+                encodeURIComponent(
+                    "سلام\n\n" +
+                    "پیشنهاد یا نظر کاربر:\n\n" +
+                    message
+                );
+
+            window.location.href =
+                `mailto:${receiverEmail}?subject=${subject}&body=${body}`;
+
+            suggestionStatus.style.color = "#27ae60";
+            suggestionStatus.textContent =
+                "در حال بازکردن برنامه‌ی ایمیل...";
         }
 
         // اتصال دکمه به تابع اصلی
