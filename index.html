@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ساخت فولدرهای سال شمسی</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Tahoma, "Segoe UI", sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 620px;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin: 0 0 12px;
+        }
+
+        p {
+            color: #7f8c8d;
+            font-size: 0.92rem;
+            line-height: 2;
+            margin: 0 0 22px;
+        }
+
+        .year-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            color: #34495e;
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            width: 130px;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 7px;
+            text-align: center;
+            font-size: 1rem;
+            direction: ltr;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+        }
+
+        button {
+            padding: 12px 25px;
+            background: #3498db;
+            color: #ffffff;
+            border: none;
+            border-radius: 7px;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.25s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        #progress {
+            display: none;
+            width: 100%;
+            height: 22px;
+            margin-top: 25px;
+            background: #ecf0f1;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        #progressInner {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                #2ecc71,
+                #27ae60
+            );
+            transition: width 0.2s ease;
+        }
+
+        #status {
+            min-height: 55px;
+            margin-top: 20px;
+            color: #2c3e50;
+            font-weight: bold;
+            line-height: 2;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-weight: normal;
+        }
+
+        .done {
+            color: #27ae60;
+            font-weight: normal;
+        }
+
+        .info {
+            color: #2980b9;
+            font-weight: normal;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>ساخت فولدرهای سال شمسی</h1>
+
+        <p>
+            پوشه‌ی مقصد را انتخاب کنید. ابتدا فولدری با نام سال ساخته می‌شود،
+            سپس فولدر ماه‌ها و روزهای همان سال داخل آن قرار می‌گیرد.
+        </p>
+
+        <div class="year-box">
+            <label for="year">سال شمسی:</label>
+
+            <input
+                type="number"
+                id="year"
+                value="1404"
+                min="1300"
+                max="1500"
+                step="1"
+            >
+        </div>
+
+        <button id="pickBtn" type="button">
+            انتخاب پوشه و شروع ساخت
+        </button>
+
+        <div id="progress">
+            <div id="progressInner"></div>
+        </div>
+
+        <div id="status"></div>
+    </div>
+
+    <script>
+        "use strict";
+
+        // -----------------------------------------------------
+        // اطلاعات تقویم شمسی
+        // -----------------------------------------------------
+
+        const monthNames = [
+            "فروردین",
+            "اردیبهشت",
+            "خرداد",
+            "تیر",
+            "مرداد",
+            "شهریور",
+            "مهر",
+            "آبان",
+            "آذر",
+            "دی",
+            "بهمن",
+            "اسفند"
+        ];
+
+        const weekDays = [
+            "شنبه",
+            "یکشنبه",
+            "دوشنبه",
+            "سه شنبه",
+            "چهارشنبه",
+            "پنجشنبه",
+            "جمعه"
+        ];
+
+        // محدوده‌های استاندارد تقویم جلالی
+        const jalaliBreaks = [
+            -61, 9, 38, 199, 426, 686, 756, 818,
+            1111, 1181, 1210, 1635, 2060, 2097,
+            2192, 2262, 2324, 2394, 2456, 3178
+        ];
+
+        function div(a, b) {
+            return Math.floor(a / b);
+        }
+
+        function mod(a, b) {
+            return a - Math.floor(a / b) * b;
+        }
+
+        /*
+         * محاسبه‌ی اطلاعات سال جلالی
+         *
+         * خروجی:
+         * leap : فاصله‌ی سال تا کبیسه
+         * gy   : سال میلادی متناظر
+         * march: روز شروع فروردین در ماه مارس
+         */
+        function jalCal(jy, withoutLeap = false) {
+            const breaks = jalaliBreaks;
+            const bl = breaks.length;
+
+            const gy = jy + 621;
+
+            let leapJ = -14;
+            let jp = breaks[0];
+            let jm;
+            let jump;
+            let leap;
+            let n;
+
+            if (jy < breaks[0] || jy >= breaks[bl - 1]) {
+                throw new Error(
+                    "سال واردشده خارج از محدوده‌ی تقویم جلالی است."
+                );
+            }
+
+            for (let i = 1; i < bl; i++) {
+                jm = breaks[i];
+                jump = jm - jp;
+
+                if (jy < jm) {
+                    break;
+                }
+
+                leapJ +=
+                    div(jump, 33) * 8 +
+                    div(mod(jump, 33), 4);
+
+                jp = jm;
+            }
+
+            n = jy - jp;
+
+            leapJ +=
+                div(n, 33) * 8 +
+                div(mod(n, 33) + 3, 4);
+
+            if (mod(jump, 33) === 4 && jump - n === 4) {
+                leapJ++;
+            }
+
+            const leapG =
+                div(gy, 4) -
+                div((div(gy, 100) + 1) * 3, 4) -
+                150;
+
+            const march = 20 + leapJ - leapG;
+
+            if (withoutLeap) {
+                return {
+                    gy: gy,
+                    march: march
+                };
+            }
+
+            n = jy - jp;
+
+            if (jump - n < 6) {
+                n = n - jump + div(jump + 4, 33) * 33;
+            }
+
+            leap = mod(
+                mod(n + 1, 33) - 1,
+                4
+            );
+
+            if (leap === -1) {
+                leap = 4;
+            }
+
+            return {
+                leap: leap,
+                gy: gy,
+                march: march
+            };
+        }
+
+        // بررسی کبیسه بودن سال شمسی
+        function isLeapJalaaliYear(year) {
+            return jalCal(year).leap === 0;
+        }
+
+        // تعداد روزهای ماه‌های سال شمسی
+        function getMonthDays(year) {
+            return [
+                31, 31, 31, 31, 31, 31,
+                30, 30, 30, 30, 30,
+                isLeapJalaaliYear(year) ? 30 : 29
+            ];
+        }
+
+        /*
+         * تبدیل تاریخ شمسی به میلادی
+         *
+         * در این روش، روز اول فروردین از الگوریتم استاندارد
+         * تقویم جلالی محاسبه می‌شود.
+         */
+        function jalaaliToGregorian(jy, jm, jd) {
+            const calendarInfo = jalCal(jy, true);
+
+            let dayOfYear;
+
+            if (jm <= 6) {
+                dayOfYear =
+                    (jm - 1) * 31 + (jd - 1);
+            } else {
+                dayOfYear =
+                    6 * 31 + (jm - 7) * 30 + (jd - 1);
+            }
+
+            /*
+             * استفاده از UTC برای جلوگیری از تأثیر ساعت تابستانی
+             * سیستم روی روز هفته
+             */
+            const date = new Date(
+                Date.UTC(
+                    calendarInfo.gy,
+                    2,
+                    calendarInfo.march + dayOfYear
+                )
+            );
+
+            return {
+                year: date.getUTCFullYear(),
+                month: date.getUTCMonth() + 1,
+                day: date.getUTCDate()
+            };
+        }
+
+        // دریافت نام روز هفته برای تاریخ شمسی
+        function getPersianDayName(year, month, day) {
+            const gregorianDate = jalaaliToGregorian(
+                year,
+                month,
+                day
+            );
+
+            const date = new Date(
+                Date.UTC(
+                    gregorianDate.year,
+                    gregorianDate.month - 1,
+                    gregorianDate.day
+                )
+            );
+
+            /*
+             * getUTCDay:
+             * یکشنبه = 0
+             * دوشنبه = 1
+             * سه‌شنبه = 2
+             * چهارشنبه = 3
+             * پنجشنبه = 4
+             * جمعه = 5
+             * شنبه = 6
+             *
+             * تبدیل به ترتیب فارسی:
+             * شنبه، یکشنبه، دوشنبه، ...
+             */
+            const persianIndex =
+                (date.getUTCDay() + 1) % 7;
+
+            return weekDays[persianIndex];
+        }
+
+        // -----------------------------------------------------
+        // توابع ساخت فولدر
+        // -----------------------------------------------------
+
+        async function createFolder(parentHandle, folderName) {
+            return await parentHandle.getDirectoryHandle(
+                folderName,
+                { create: true }
+            );
+        }
+
+        function setStatus(message, className = "") {
+            const statusEl =
+                document.getElementById("status");
+
+            statusEl.innerHTML =
+                className
+                    ? `<span class="${className}">${message}</span>`
+                    : message;
+        }
+
+        function updateProgress(processed, total) {
+            const progressInner =
+                document.getElementById("progressInner");
+
+            const percent = Math.round(
+                (processed / total) * 100
+            );
+
+            progressInner.style.width = `${percent}%`;
+
+            setStatus(
+                `در حال ساخت... ${processed} از ${total} روز (${percent}٪)`
+            );
+        }
+
+        /*
+         * اجرای اصلی برنامه
+         */
+        async function pickAndCreate() {
+            const yearInput =
+                document.getElementById("year");
+
+            const pickBtn =
+                document.getElementById("pickBtn");
+
+            const progressEl =
+                document.getElementById("progress");
+
+            const progressInner =
+                document.getElementById("progressInner");
+
+            const year =
+                parseInt(yearInput.value, 10);
+
+            // اعتبارسنجی سال
+            if (
+                Number.isNaN(year) ||
+                year < 1300 ||
+                year > 1500
+            ) {
+                setStatus(
+                    "لطفاً سالی بین ۱۳۰۰ تا ۱۵۰۰ وارد کنید.",
+                    "error"
+                );
+                return;
+            }
+
+            // بررسی پشتیبانی مرورگر
+            if (!window.showDirectoryPicker) {
+                setStatus(
+                    "مرورگر شما از انتخاب پوشه پشتیبانی نمی‌کند. " +
+                    "لطفاً از Google Chrome یا Microsoft Edge استفاده کنید.",
+                    "error"
+                );
+                return;
+            }
+
+            try {
+                /*
+                 * انتخاب پوشه‌ی والد
+                 * فولدر سال داخل این پوشه ساخته می‌شود.
+                 */
+                const parentHandle =
+                    await window.showDirectoryPicker({
+                        mode: "readwrite",
+                        startIn: "documents"
+                    });
+
+                pickBtn.disabled = true;
+                progressEl.style.display = "block";
+                progressInner.style.width = "0%";
+
+                setStatus(
+                    "در حال ایجاد فولدرها...",
+                    "info"
+                );
+
+                // ساخت فولدر اصلی سال
+                const yearFolder =
+                    await createFolder(
+                        parentHandle,
+                        String(year)
+                    );
+
+                const monthDays =
+                    getMonthDays(year);
+
+                const totalDays =
+                    monthDays.reduce(
+                        (sum, days) => sum + days,
+                        0
+                    );
+
+                let processed = 0;
+
+                // ساخت فولدر ماه‌ها و روزها
+                for (let month = 1; month <= 12; month++) {
+                    const monthFolderName =
+                        `${String(month).padStart(2, "0")}_${monthNames[month - 1]}`;
+
+                    const monthFolder =
+                        await createFolder(
+                            yearFolder,
+                            monthFolderName
+                        );
+
+                    const daysInMonth =
+                        monthDays[month - 1];
+
+                    for (
+                        let day = 1;
+                        day <= daysInMonth;
+                        day++
+                    ) {
+                        const dayName =
+                            getPersianDayName(
+                                year,
+                                month,
+                                day
+                            );
+
+                        const dateText =
+                            `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+                        const dayFolderName =
+                            `${dateText}_${dayName}`;
+
+                        const dayFolder =
+                            await createFolder(
+                                monthFolder,
+                                dayFolderName
+                            );
+
+                        // زیرپوشه‌های هر روز
+                        await createFolder(
+                            dayFolder,
+                            "کارهای انجام شده"
+                        );
+
+                        await createFolder(
+                            dayFolder,
+                            "کارهای در دست اقدام"
+                        );
+
+                        processed++;
+
+                        updateProgress(
+                            processed,
+                            totalDays
+                        );
+
+                        /*
+                         * اجازه می‌دهد نوار پیشرفت در مرورگر
+                         * به‌درستی به‌روزرسانی شود.
+                         */
+                        await new Promise(resolve =>
+                            setTimeout(resolve, 0)
+                        );
+                    }
+                }
+
+                progressInner.style.width = "100%";
+
+                setStatus(
+                    "✅ همه‌ی فولدرها با موفقیت ساخته شدند.",
+                    "done"
+                );
+
+                pickBtn.disabled = false;
+
+            } catch (error) {
+                if (error.name === "AbortError") {
+                    setStatus(
+                        "انتخاب پوشه لغو شد.",
+                        "error"
+                    );
+                } else {
+                    console.error(error);
+
+                    setStatus(
+                        `خطا: ${error.message || error}`,
+                        "error"
+                    );
+                }
+
+                pickBtn.disabled = false;
+                progressEl.style.display = "none";
+            }
+        }
+
+        // اتصال دکمه به تابع اصلی
+        document
+            .getElementById("pickBtn")
+            .addEventListener(
+                "click",
+                pickAndCreate
+            );
+
+        // -----------------------------------------------------
+        // تست خودکار تاریخ‌های مهم
+        // -----------------------------------------------------
+
+        console.log(
+            "1404/01/01:",
+            getPersianDayName(1404, 1, 1)
+        );
+
+        console.log(
+            "1405/01/01:",
+            getPersianDayName(1405, 1, 1)
+        );
+
+        console.log(
+            "1406/01/01:",
+            getPersianDayName(1406, 1, 1)
+        );
+    </script>
+
+</body>
+</html>
