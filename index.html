@@ -3,428 +3,786 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>ساخت فولدرهای سال شمسی</title>
 
+    <!-- فونت وزیرمتن -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+
     <style>
+        /* ======================= متغیرهای تم ======================= */
+        :root {
+            --bg-primary: #f0f4ff;
+            --bg-secondary: #e8edf7;
+            --accent-1: #6c63ff;
+            --accent-2: #3ec1d3;
+            --accent-3: #f9a826;
+            --text-primary: #2c3e50;
+            --text-secondary: #5f6f78;
+            --card-bg: rgba(255, 255, 255, 0.65);
+            --card-border: rgba(255, 255, 255, 0.45);
+            --shadow-color: rgba(50, 60, 80, 0.18);
+            --input-bg: rgba(255, 255, 255, 0.85);
+            --input-border: #cbd5e1;
+            --btn-gradient: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            --btn-hover-gradient: linear-gradient(135deg, var(--accent-1), #5aa9dd);
+            --progress-track: rgba(100, 116, 139, 0.15);
+            --footer-bg: rgba(0, 0, 0, 0.03);
+        }
+
+        body[data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --card-bg: rgba(30, 41, 59, 0.65);
+            --card-border: rgba(148, 163, 184, 0.25);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --input-bg: rgba(30, 41, 59, 0.9);
+            --input-border: #334155;
+            --progress-track: rgba(148, 163, 184, 0.2);
+            --footer-bg: rgba(255, 255, 255, 0.03);
+        }
+
+        /* ======================= پایه ======================= */
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: Tahoma, "Segoe UI", sans-serif;
-            background: #f0f4f8;
-            margin: 0;
-            padding: 20px;
+            font-family: "Vazirmatn", Tahoma, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+            transition: background 0.4s ease, color 0.4s ease;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* پس‌زمینه‌ی گرافیکی با اشکال شناور */
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            z-index: -1;
+            animation: float 12s infinite alternate ease-in-out;
+        }
+
+        body::before {
+            background: var(--accent-1);
+            top: -100px;
+            right: -80px;
+        }
+
+        body::after {
+            background: var(--accent-2);
+            bottom: -100px;
+            left: -80px;
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0%   { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, 30px) scale(1.05); }
         }
 
         .container {
             width: 100%;
-            max-width: 620px;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 14px;
-            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            max-width: 780px;
+            position: relative;
+            z-index: 10;
         }
 
-        h1 {
-            color: #2c3e50;
+        /* ======================= هدر ======================= */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            padding: 0 0.25rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
             font-size: 1.5rem;
-            margin: 0 0 12px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
         }
 
-        p {
-            color: #7f8c8d;
-            font-size: 0.92rem;
+        .logo-icon {
+            width: 52px;
+            height: 52px;
+            background: var(--btn-gradient);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: white;
+            box-shadow: 0 8px 20px rgba(108, 99, 255, 0.35);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover .logo-icon {
+            transform: rotate(10deg) scale(1.05);
+        }
+
+        /* دکمه تم */
+        .theme-toggle {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 50px;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            box-shadow: 0 4px 10px var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--shadow-color);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ======================= کارت اصلی ======================= */
+        .main-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 20px 50px var(--shadow-color);
+            text-align: center;
+            animation: fadeUp 0.8s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .main-card h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: var(--btn-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.8rem;
+        }
+
+        .main-card > p {
+            color: var(--text-secondary);
             line-height: 2;
-            margin: 0 0 22px;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
         }
 
+        /* ======================= ورودی سال ======================= */
         .year-box {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
         }
 
-        label {
-            color: #34495e;
-            font-weight: bold;
+        .year-box label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
         }
 
-        input[type="number"] {
-            width: 130px;
-            padding: 10px;
-            border: 1px solid #bdc3c7;
-            border-radius: 7px;
-            text-align: center;
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper svg {
+            position: absolute;
+            right: 14px;
+            width: 18px;
+            height: 18px;
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        .year-box input {
+            width: 140px;
+            padding: 0.9rem 3rem 0.9rem 1rem;
+            border: 2px solid var(--input-border);
+            border-radius: 14px;
             font-size: 1rem;
+            font-family: "Vazirmatn", monospace;
+            text-align: center;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
             direction: ltr;
         }
 
-        input[type="number"]:focus {
+        .year-box input:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+            border-color: var(--accent-1);
+            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.2);
         }
 
-        button {
-            padding: 12px 25px;
-            background: #3498db;
-            color: #ffffff;
+        /* ======================= دکمه اصلی ======================= */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            background: var(--btn-gradient);
             border: none;
-            border-radius: 7px;
+            border-radius: 14px;
+            padding: 1rem 2.5rem;
+            color: white;
             font-family: inherit;
             font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.25s;
-        }
-
-        button:hover {
-            background: #2980b9;
-        }
-
-        button:disabled {
-            background: #95a5a6;
-            cursor: not-allowed;
-        }
-
-        #progress {
-            display: none;
-            width: 100%;
-            height: 22px;
-            margin-top: 25px;
-            background: #ecf0f1;
-            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(108, 99, 255, 0.35);
+            transition: all 0.3s ease;
+            position: relative;
             overflow: hidden;
         }
 
-        #progressInner {
-            width: 0%;
+        .btn-primary::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: -100%;
+            width: 100%;
             height: 100%;
             background: linear-gradient(
-                90deg,
-                #2ecc71,
-                #27ae60
+                120deg,
+                transparent,
+                rgba(255, 255, 255, 0.25),
+                transparent
             );
-            transition: width 0.2s ease;
+            transition: right 0.6s ease;
         }
 
+        .btn-primary:hover::before {
+            right: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(108, 99, 255, 0.5);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-primary svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ======================= نوار پیشرفت ======================= */
+        .progress-wrap {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 12px;
+            background: var(--progress-track);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+            border-radius: 20px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                transparent,
+                transparent 50%,
+                rgba(255, 255, 255, 0.2) 50%
+            );
+            background-size: 100% 4px;
+            animation: move 1s linear infinite;
+        }
+
+        @keyframes move {
+            from { background-position: 0 0; }
+            to   { background-position: 0 20px; }
+        }
+
+        /* ======================= وضعیت ======================= */
         #status {
-            min-height: 55px;
-            margin-top: 20px;
-            color: #2c3e50;
-            font-weight: bold;
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            min-height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             line-height: 2;
         }
 
-        .error {
-            color: #e74c3c;
-            font-weight: normal;
-        }
+        .error { color: #ef4444; }
+        .done  { color: #10b981; }
+        .info  { color: var(--accent-1); }
 
-        .done {
-            color: #27ae60;
-            font-weight: normal;
-        }
-
-        .info {
-            color: #2980b9;
-            font-weight: normal;
-        }
-
-        /* بخش‌های راهنما و درباره برنامه */
+        /* ======================= آکاردئون‌ها ======================= */
         .extra-sections {
-            margin-top: 30px;
-            text-align: right;
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
-        .extra-sections details {
-            margin-bottom: 12px;
-            border: 1px solid #e1e7eb;
-            border-radius: 8px;
-            background: #fafcfd;
+        details {
+            background: var(--card-bg);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
             overflow: hidden;
+            transition: all 0.3s ease;
+            animation: fadeUp 0.6s ease backwards;
         }
 
-        .extra-sections summary {
-            padding: 14px 16px;
-            color: #2c3e50;
-            font-weight: bold;
+        details:nth-child(2) { animation-delay: 0.15s; }
+        details:nth-child(3) { animation-delay: 0.3s; }
+
+        details:hover {
+            border-color: var(--accent-1);
+            box-shadow: 0 8px 20px var(--shadow-color);
+        }
+
+        details[open] {
+            box-shadow: 0 12px 30px var(--shadow-color);
+        }
+
+        summary {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 1.2rem;
+            font-weight: 600;
             cursor: pointer;
-            background: #f4f8fa;
+            list-style: none;
             user-select: none;
+            transition: background 0.3s ease;
         }
 
-        .extra-sections summary:hover {
-            background: #eaf2f7;
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary::before {
+            content: "+";
+            margin-right: auto;
+            font-size: 1.3rem;
+            color: var(--accent-1);
+            transition: transform 0.3s ease;
+        }
+
+        details[open] summary::before {
+            content: "−";
+            transform: rotate(180deg);
+        }
+
+        summary .icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--btn-gradient);
+            color: white;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(108, 99, 255, 0.3);
+        }
+
+        summary .icon-box svg {
+            width: 20px;
+            height: 20px;
         }
 
         .details-content {
-            padding: 15px 18px;
-            color: #5f6f78;
-            font-size: 0.9rem;
-            line-height: 2.1;
+            padding: 1.2rem 1.5rem;
+            border-top: 1px solid var(--input-border);
+            color: var(--text-secondary);
+            line-height: 2.2;
+            font-size: 0.92rem;
         }
 
         .details-content ul {
-            margin: 8px 0;
-            padding-right: 22px;
-        }
-
-        .details-content li {
-            margin-bottom: 5px;
+            margin-right: 1.5rem;
+            margin-bottom: 0.8rem;
         }
 
         .about-list {
             list-style: none;
-            padding: 0 !important;
-            margin: 0 !important;
+            margin-right: 0 !important;
         }
 
         .about-list li {
-            padding: 5px 0;
-            border-bottom: 1px dashed #dfe6e9;
+            padding: 0.6rem 0;
+            border-bottom: 1px dashed var(--input-border);
         }
 
         .about-list li:last-child {
             border-bottom: none;
         }
 
-        .suggestion-form {
-            margin-top: 10px;
-        }
-
-        .suggestion-form label {
-            display: block;
-            margin-bottom: 8px;
-            color: #34495e;
-            font-size: 0.9rem;
-        }
-
-        .suggestion-form textarea {
-            width: 100%;
-            min-height: 100px;
-            padding: 10px;
-            resize: vertical;
-            border: 1px solid #bdc3c7;
-            border-radius: 7px;
-            font-family: inherit;
-            font-size: 0.9rem;
-            line-height: 1.8;
-        }
-
-        .suggestion-form textarea:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
-        }
-
-        .suggestion-form button {
-            margin-top: 10px;
-            padding: 9px 18px;
-            font-size: 0.9rem;
-        }
-
-        .suggestion-note {
-            margin-top: 8px;
-            color: #95a5a6;
-            font-size: 0.78rem;
-            line-height: 1.8;
-        }
-
-        #suggestionStatus {
-            margin-top: 10px;
-            color: #27ae60;
-            font-size: 0.85rem;
-        }
-
         .contact-info {
-            background: #f9fbfc;
-            padding: 10px 15px;
-            border-radius: 8px;
-            border-right: 4px solid #3498db;
-            margin-top: 10px;
+            background: var(--footer-bg);
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            border-right: 4px solid var(--accent-1);
             direction: ltr;
             text-align: right;
+            font-size: 0.9rem;
         }
 
         .contact-info a {
-            color: #2980b9;
+            color: var(--accent-1);
             text-decoration: none;
+            font-weight: 500;
         }
 
         .contact-info a:hover {
             text-decoration: underline;
         }
+
+        /* ======================= فرم پیشنهاد ======================= */
+        .suggestion-form {
+            margin-top: 1rem;
+        }
+
+        .suggestion-form label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 0.6rem;
+            color: var(--text-primary);
+        }
+
+        .suggestion-form textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 0.8rem 1rem;
+            border: 2px solid var(--input-border);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            resize: vertical;
+            transition: all 0.3s ease;
+            line-height: 1.8;
+        }
+
+        .suggestion-form textarea:focus {
+            outline: none;
+            border-color: var(--accent-1);
+            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.15);
+        }
+
+        .btn-small {
+            margin-top: 1rem;
+            padding: 0.7rem 1.5rem;
+            background: var(--btn-gradient);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(108, 99, 255, 0.3);
+        }
+
+        .btn-small:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(108, 99, 255, 0.45);
+        }
+
+        #suggestionStatus {
+            margin-top: 0.8rem;
+            font-size: 0.85rem;
+            color: #10b981;
+        }
+
+        .suggestion-note {
+            margin-top: 0.8rem;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* ======================= ریسپانسیو ======================= */
+        @media (max-width: 600px) {
+            .main-card {
+                padding: 1.8rem 1.2rem;
+                border-radius: 18px;
+            }
+
+            .app-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .logo-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 1.3rem;
+            }
+
+            .year-box {
+                flex-direction: column;
+            }
+
+            .theme-toggle span {
+                display: none;
+            }
+
+            .theme-toggle {
+                padding: 0.6rem;
+            }
+        }
     </style>
 </head>
 
-<body>
-
+<body data-theme="light">
     <div class="container">
-        <h1>ساخت فولدرهای سال شمسی</h1>
 
-        <p>
-            پوشه‌ی مقصد را انتخاب کنید. ابتدا فولدری با نام سال ساخته می‌شود،
-            سپس فولدر ماه‌ها و روزهای همان سال داخل آن قرار می‌گیرد.
-        </p>
+        <!-- هدر -->
+        <header class="app-header">
+            <div class="logo">
+                <div class="logo-icon">📁</div>
+                <span>سازنده فولدر سال</span>
+            </div>
 
-        <div class="year-box">
-            <label for="year">سال شمسی:</label>
+            <button class="theme-toggle" onclick="toggleTheme()" title="تغییر تم">
+                <svg id="themeIconDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+                <svg id="themeIconLight" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <span>تم</span>
+            </button>
+        </header>
 
-            <input
-                type="number"
-                id="year"
-                value="1404"
-                min="1300"
-                max="1500"
-                step="1"
-            >
+        <!-- کارت اصلی -->
+        <div class="main-card">
+            <h1>ساخت فولدرهای سال شمسی</h1>
+            <p>
+                پوشه‌ی مقصد را انتخاب کنید. ابتدا فولدری با نام سال ساخته می‌شود،
+                سپس فولدر ماه‌ها و روزهای همان سال داخل آن قرار می‌گیرد.
+            </p>
+
+            <div class="year-box">
+                <label for="year">سال شمسی:</label>
+
+                <div class="input-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <input
+                        type="number"
+                        id="year"
+                        value="1404"
+                        min="1300"
+                        max="1500"
+                        step="1"
+                    >
+                </div>
+            </div>
+
+            <button id="pickBtn" class="btn-primary" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 11.5v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8"></path>
+                    <polyline points="7 10 12 5 17 10"></polyline>
+                    <line x1="12" y1="5" x2="12" y2="21"></line>
+                </svg>
+                انتخاب پوشه و شروع ساخت
+            </button>
+
+            <!-- نوار پیشرفت -->
+            <div class="progress-wrap" id="progressWrap">
+                <div class="progress-label">
+                    <span>در حال ساخت فولدرها...</span>
+                    <span id="progressPercent">۰٪</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- وضعیت -->
+            <div id="status"></div>
         </div>
 
-        <button id="pickBtn" type="button">
-            انتخاب پوشه و شروع ساخت
-        </button>
-
-        <div id="progress">
-            <div id="progressInner"></div>
-        </div>
-
-        <div id="status"></div>
-
-        <!-- بخش‌های راهنما، درباره و پیشنهادات -->
+        <!-- بخش‌های اضافه -->
         <div class="extra-sections">
 
             <!-- راهنمای استفاده -->
             <details>
-                <summary>📘 راهنمای استفاده</summary>
+                <summary>
+                    <div class="icon-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 18h16"></path><path d="M4 6h16"></path><path d="M4 12h16"></path>
+                            <path d="M9 9l3 3 3-3"></path>
+                        </svg>
+                    </div>
+                    <span>راهنمای استفاده</span>
+                </summary>
 
                 <div class="details-content">
                     <ul>
-                        <li>
-                            ابتدا سال شمسی موردنظر را در کادر سال وارد کنید.
-                        </li>
-
-                        <li>
-                            روی دکمه‌ی
-                            <strong>«انتخاب پوشه و شروع ساخت»</strong>
-                            کلیک کنید.
-                        </li>
-
-                        <li>
-                            پوشه‌ی مقصد را از پنجره‌ی بازشده انتخاب کنید.
-                        </li>
-
-                        <li>
-                            برنامه داخل پوشه‌ی انتخاب‌شده، یک فولدر با نام سال
-                            ایجاد می‌کند.
-                        </li>
-
-                        <li>
-                            داخل فولدر سال، فولدرهای ۱۲ ماه ساخته می‌شوند.
-                        </li>
-
-                        <li>
-                            داخل هر ماه، فولدر تمام روزهای آن ماه با نام تاریخ و
-                            روز هفته ایجاد خواهد شد.
-                        </li>
-
-                        <li>
-                            داخل هر روز نیز دو فولدر زیر ساخته می‌شود:
-                            <br>
-                            <strong>کارهای انجام شده</strong>
-                            <br>
-                            <strong>کارهای در دست اقدام</strong>
-                        </li>
+                        <li>سال شمسی موردنظر را در کادر سال وارد کنید.</li>
+                        <li>روی دکمه‌ی «انتخاب پوشه و شروع ساخت» کلیک کنید.</li>
+                        <li>پوشه‌ی مقصد را از پنجره‌ی بازشده انتخاب کنید.</li>
+                        <li>برنامه داخل پوشه‌ی انتخاب‌شده، یک فولدر با نام سال ایجاد می‌کند.</li>
+                        <li>داخل فولدر سال، فولدرهای ۱۲ ماه ساخته می‌شوند.</li>
+                        <li>داخل هر ماه، فولدر تمام روزهای آن ماه با نام تاریخ و روز هفته ایجاد می‌شود.</li>
+                        <li>داخل هر روز دو زیرپوشه ساخته می‌شود: «کارهای انجام شده» و «کارهای در دست اقدام».</li>
                     </ul>
-
-                    <p>
-                        در هنگام ساخت فولدرها، نوار پیشرفت تعداد روزهای ایجادشده
-                        و درصد پیشرفت را نمایش می‌دهد.
-                    </p>
                 </div>
             </details>
 
             <!-- درباره برنامه -->
             <details>
-                <summary>ℹ️ درباره برنامه</summary>
+                <summary>
+                    <div class="icon-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                    </div>
+                    <span>درباره برنامه</span>
+                </summary>
 
                 <div class="details-content">
-                    <p>
-                        این برنامه برای ایجاد خودکار ساختار فولدرهای سال شمسی
-                        طراحی شده است.
-                    </p>
-
                     <ul class="about-list">
-                        <li>
-                            <strong>نوع برنامه:</strong>
-                            ابزار مدیریت فولدرهای تقویم شمسی
-                        </li>
-
-                        <li>
-                            <strong>تقویم مورد استفاده:</strong>
-                            تقویم جلالی
-                        </li>
-
-                        <li>
-                            <strong>محل ذخیره‌سازی:</strong>
-                            مستقیماً در پوشه‌ای که کاربر انتخاب می‌کند
-                        </li>
-
-                        <li>
-                            <strong>حریم خصوصی:</strong>
-                            هیچ فایلی به سرور ارسال نمی‌شود و عملیات ساخت فولدرها
-                            روی رایانه‌ی خود کاربر انجام می‌گیرد.
-                        </li>
-
-                        <li>
-                            <strong>مرورگر پیشنهادی:</strong>
-                            Google Chrome یا Microsoft Edge
-                        </li>
+                        <li><strong>نوع برنامه:</strong> ابزار مدیریت فولدرهای تقویم شمسی</li>
+                        <li><strong>تقویم:</strong> تقویم جلالی</li>
+                        <li><strong>ذخیره‌سازی:</strong> محلی - هیچ داده‌ای به سرور ارسال نمی‌شود</li>
+                        <li><strong>مرورگر پیشنهادی:</strong> Chrome یا Edge</li>
                     </ul>
 
-                    <!-- اطلاعات تماس -->
                     <div class="contact-info">
                         <strong>ایمیل:</strong>
                         <a href="mailto:mosayeb872@gmail.com">mosayeb872@gmail.com</a>
                         <br>
-                        <strong>تلفن همراه:</strong>
+                        <strong>تلفن:</strong>
                         <a href="tel:+989173206052">+98 917 320 6052</a>
                     </div>
                 </div>
             </details>
 
-            <!-- پیشنهادات کاربران -->
+            <!-- پیشنهادات -->
             <details>
-                <summary>💡 ارسال پیشنهاد و نظر</summary>
+                <summary>
+                    <div class="icon-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                        </svg>
+                    </div>
+                    <span>ارسال پیشنهاد و نظر</span>
+                </summary>
 
                 <div class="details-content">
-                    <p>
-                        اگر پیشنهادی برای بهترشدن برنامه دارید، نظر خود را
-                        برای ما ارسال کنید.
-                    </p>
+                    <p>اگر پیشنهادی برای بهترشدن برنامه دارید، نظر خود را برای ما ارسال کنید.</p>
 
                     <div class="suggestion-form">
-                        <label for="suggestion">
-                            پیشنهاد یا توضیحات شما:
-                        </label>
+                        <label for="suggestion">پیشنهاد یا توضیحات شما:</label>
+                        <textarea id="suggestion" placeholder="مثلاً: امکان انتخاب نام فولدرها اضافه شود..."></textarea>
 
-                        <textarea
-                            id="suggestion"
-                            placeholder="مثلاً: امکان انتخاب نام فولدرها اضافه شود..."
-                        ></textarea>
-
-                        <button
-                            type="button"
-                            onclick="sendSuggestion()"
-                        >
+                        <button class="btn-small" type="button" onclick="sendSuggestion()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
                             ارسال پیشنهاد
                         </button>
 
@@ -432,14 +790,11 @@
 
                         <div class="suggestion-note">
                             با کلیک روی دکمه، برنامه‌ی ایمیل پیش‌فرض شما باز می‌شود.
-                            پیام شما به آدرس
-                            <strong>mosayeb872@gmail.com</strong>
-                            ارسال می‌شود.
+                            پیام به آدرس <strong>mosayeb872@gmail.com</strong> ارسال می‌شود.
                         </div>
                     </div>
                 </div>
             </details>
-
         </div>
 
     </div>
@@ -447,503 +802,216 @@
     <script>
         "use strict";
 
-        // -----------------------------------------------------
-        // اطلاعات تقویم شمسی
-        // -----------------------------------------------------
+        // ----------------------------------------------------------
+        // توابع تقویم شمسی (تغییری نکرده)
+        // ----------------------------------------------------------
+        const monthNames = ["فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند"];
+        const weekDays = ["شنبه","یکشنبه","دوشنبه","سه شنبه","چهارشنبه","پنجشنبه","جمعه"];
+        const jalaliBreaks = [-61, 9, 38, 199, 426, 686, 756, 818, 1111, 1181, 1210, 1635, 2060, 2097, 2192, 2262, 2324, 2394, 2456, 3178];
+        const div = (a, b) => Math.floor(a / b);
+        const mod = (a, b) => a - Math.floor(a / b) * b;
 
-        const monthNames = [
-            "فروردین",
-            "اردیبهشت",
-            "خرداد",
-            "تیر",
-            "مرداد",
-            "شهریور",
-            "مهر",
-            "آبان",
-            "آذر",
-            "دی",
-            "بهمن",
-            "اسفند"
-        ];
-
-        const weekDays = [
-            "شنبه",
-            "یکشنبه",
-            "دوشنبه",
-            "سه شنبه",
-            "چهارشنبه",
-            "پنجشنبه",
-            "جمعه"
-        ];
-
-        // محدوده‌های استاندارد تقویم جلالی
-        const jalaliBreaks = [
-            -61, 9, 38, 199, 426, 686, 756, 818,
-            1111, 1181, 1210, 1635, 2060, 2097,
-            2192, 2262, 2324, 2394, 2456, 3178
-        ];
-
-        function div(a, b) {
-            return Math.floor(a / b);
-        }
-
-        function mod(a, b) {
-            return a - Math.floor(a / b) * b;
-        }
-
-        /*
-         * محاسبه‌ی اطلاعات سال جلالی
-         *
-         * خروجی:
-         * leap : فاصله‌ی سال تا کبیسه
-         * gy   : سال میلادی متناظر
-         * march: روز شروع فروردین در ماه مارس
-         */
         function jalCal(jy, withoutLeap = false) {
-            const breaks = jalaliBreaks;
-            const bl = breaks.length;
-
+            const breaks = jalaliBreaks, bl = breaks.length;
             const gy = jy + 621;
-
-            let leapJ = -14;
-            let jp = breaks[0];
-            let jm;
-            let jump;
-            let leap;
-            let n;
-
-            if (jy < breaks[0] || jy >= breaks[bl - 1]) {
-                throw new Error(
-                    "سال واردشده خارج از محدوده‌ی تقویم جلالی است."
-                );
-            }
-
+            let leapJ = -14, jp = breaks[0], jm, jump, leap, n;
+            if (jy < breaks[0] || jy >= breaks[bl - 1])
+                throw new Error("سال واردشده خارج از محدوده تقویم جلالی است.");
             for (let i = 1; i < bl; i++) {
-                jm = breaks[i];
-                jump = jm - jp;
-
-                if (jy < jm) {
-                    break;
-                }
-
-                leapJ +=
-                    div(jump, 33) * 8 +
-                    div(mod(jump, 33), 4);
-
+                jm = breaks[i]; jump = jm - jp;
+                if (jy < jm) break;
+                leapJ += div(jump, 33) * 8 + div(mod(jump, 33), 4);
                 jp = jm;
             }
-
             n = jy - jp;
-
-            leapJ +=
-                div(n, 33) * 8 +
-                div(mod(n, 33) + 3, 4);
-
-            if (mod(jump, 33) === 4 && jump - n === 4) {
-                leapJ++;
-            }
-
-            const leapG =
-                div(gy, 4) -
-                div((div(gy, 100) + 1) * 3, 4) -
-                150;
-
+            leapJ += div(n, 33) * 8 + div(mod(n, 33) + 3, 4);
+            if (mod(jump, 33) === 4 && jump - n === 4) leapJ++;
+            const leapG = div(gy, 4) - div((div(gy, 100) + 1) * 3, 4) - 150;
             const march = 20 + leapJ - leapG;
-
-            if (withoutLeap) {
-                return {
-                    gy: gy,
-                    march: march
-                };
-            }
-
+            if (withoutLeap) return { gy, march };
             n = jy - jp;
-
-            if (jump - n < 6) {
-                n = n - jump + div(jump + 4, 33) * 33;
-            }
-
-            leap = mod(
-                mod(n + 1, 33) - 1,
-                4
-            );
-
-            if (leap === -1) {
-                leap = 4;
-            }
-
-            return {
-                leap: leap,
-                gy: gy,
-                march: march
-            };
+            if (jump - n < 6) n = n - jump + div(jump + 4, 33) * 33;
+            leap = mod(mod(n + 1, 33) - 1, 4);
+            if (leap === -1) leap = 4;
+            return { leap, gy, march };
         }
 
-        // بررسی کبیسه بودن سال شمسی
-        function isLeapJalaaliYear(year) {
-            return jalCal(year).leap === 0;
-        }
+        const isLeapJalaaliYear = year => jalCal(year).leap === 0;
 
-        // تعداد روزهای ماه‌های سال شمسی
         function getMonthDays(year) {
-            return [
-                31, 31, 31, 31, 31, 31,
-                30, 30, 30, 30, 30,
-                isLeapJalaaliYear(year) ? 30 : 29
-            ];
+            return [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, isLeapJalaaliYear(year) ? 30 : 29];
         }
 
-        /*
-         * تبدیل تاریخ شمسی به میلادی
-         *
-         * در این روش، روز اول فروردین از الگوریتم استاندارد
-         * تقویم جلالی محاسبه می‌شود.
-         */
         function jalaaliToGregorian(jy, jm, jd) {
-            const calendarInfo = jalCal(jy, true);
-
+            const { gy, march } = jalCal(jy, true);
             let dayOfYear;
-
-            if (jm <= 6) {
-                dayOfYear =
-                    (jm - 1) * 31 + (jd - 1);
-            } else {
-                dayOfYear =
-                    6 * 31 + (jm - 7) * 30 + (jd - 1);
-            }
-
-            /*
-             * استفاده از UTC برای جلوگیری از تأثیر ساعت تابستانی
-             * سیستم روی روز هفته
-             */
-            const date = new Date(
-                Date.UTC(
-                    calendarInfo.gy,
-                    2,
-                    calendarInfo.march + dayOfYear
-                )
-            );
-
-            return {
-                year: date.getUTCFullYear(),
-                month: date.getUTCMonth() + 1,
-                day: date.getUTCDate()
-            };
+            if (jm <= 6) dayOfYear = (jm - 1) * 31 + (jd - 1);
+            else dayOfYear = 6 * 31 + (jm - 7) * 30 + (jd - 1);
+            const date = new Date(Date.UTC(gy, 2, march + dayOfYear));
+            return { year: date.getUTCFullYear(), month: date.getUTCMonth() + 1, day: date.getUTCDate() };
         }
 
-        // دریافت نام روز هفته برای تاریخ شمسی
         function getPersianDayName(year, month, day) {
-            const gregorianDate = jalaaliToGregorian(
-                year,
-                month,
-                day
-            );
-
-            const date = new Date(
-                Date.UTC(
-                    gregorianDate.year,
-                    gregorianDate.month - 1,
-                    gregorianDate.day
-                )
-            );
-
-            /*
-             * getUTCDay:
-             * یکشنبه = 0
-             * دوشنبه = 1
-             * سه‌شنبه = 2
-             * چهارشنبه = 3
-             * پنجشنبه = 4
-             * جمعه = 5
-             * شنبه = 6
-             *
-             * تبدیل به ترتیب فارسی:
-             * شنبه، یکشنبه، دوشنبه، ...
-             */
-            const persianIndex =
-                (date.getUTCDay() + 1) % 7;
-
+            const gregorianDate = jalaaliToGregorian(year, month, day);
+            const date = new Date(Date.UTC(gregorianDate.year, gregorianDate.month - 1, gregorianDate.day));
+            const persianIndex = (date.getUTCDay() + 1) % 7;
             return weekDays[persianIndex];
         }
 
-        // -----------------------------------------------------
-        // توابع ساخت فولدر
-        // -----------------------------------------------------
-
-        async function createFolder(parentHandle, folderName) {
-            return await parentHandle.getDirectoryHandle(
-                folderName,
-                { create: true }
-            );
-        }
+        // ----------------------------------------------------------
+        // توابع کمکی UI
+        // ----------------------------------------------------------
+        const $ = id => document.getElementById(id);
 
         function setStatus(message, className = "") {
-            const statusEl =
-                document.getElementById("status");
-
-            statusEl.innerHTML =
-                className
-                    ? `<span class="${className}">${message}</span>`
-                    : message;
+            const statusEl = $("status");
+            statusEl.innerHTML = className ? `<span class="${className}">${message}</span>` : message;
         }
 
         function updateProgress(processed, total) {
-            const progressInner =
-                document.getElementById("progressInner");
-
-            const percent = Math.round(
-                (processed / total) * 100
-            );
-
-            progressInner.style.width = `${percent}%`;
-
-            setStatus(
-                `در حال ساخت... ${processed} از ${total} روز (${percent}٪)`
-            );
+            const fill = $("progressFill");
+            const percentLabel = $("progressPercent");
+            const percent = Math.round((processed / total) * 100);
+            fill.style.width = `${percent}%`;
+            // تبدیل عدد به فارسی
+            percentLabel.textContent = percent.toLocaleString("fa-IR") + "٪";
+            setStatus(`در حال ساخت... ${processed.toLocaleString("fa-IR")} از ${total.toLocaleString("fa-IR")} روز`);
         }
 
-        /*
-         * اجرای اصلی برنامه
-         */
+        // ----------------------------------------------------------
+        // تابع اصلی ساخت فولدر
+        // ----------------------------------------------------------
+        async function createFolder(parentHandle, folderName) {
+            return await parentHandle.getDirectoryHandle(folderName, { create: true });
+        }
+
         async function pickAndCreate() {
-            const yearInput =
-                document.getElementById("year");
+            const year = parseInt($("year").value, 10);
 
-            const pickBtn =
-                document.getElementById("pickBtn");
-
-            const progressEl =
-                document.getElementById("progress");
-
-            const progressInner =
-                document.getElementById("progressInner");
-
-            const year =
-                parseInt(yearInput.value, 10);
-
-            // اعتبارسنجی سال
-            if (
-                Number.isNaN(year) ||
-                year < 1300 ||
-                year > 1500
-            ) {
-                setStatus(
-                    "لطفاً سالی بین ۱۳۰۰ تا ۱۵۰۰ وارد کنید.",
-                    "error"
-                );
+            if (Number.isNaN(year) || year < 1300 || year > 1500) {
+                setStatus("لطفاً سالی بین ۱۳۰۰ تا ۱۵۰۰ وارد کنید.", "error");
                 return;
             }
 
-            // بررسی پشتیبانی مرورگر
             if (!window.showDirectoryPicker) {
-                setStatus(
-                    "مرورگر شما از انتخاب پوشه پشتیبانی نمی‌کند. " +
-                    "لطفاً از Google Chrome یا Microsoft Edge استفاده کنید.",
-                    "error"
-                );
+                setStatus("مرورگر شما از انتخاب پوشه پشتیبانی نمی‌کند. از Chrome یا Edge استفاده کنید.", "error");
                 return;
             }
+
+            const pickBtn = $("pickBtn");
+            const progressWrap = $("progressWrap");
 
             try {
-                /*
-                 * انتخاب پوشه‌ی والد
-                 * فولدر سال داخل این پوشه ساخته می‌شود.
-                 */
-                const parentHandle =
-                    await window.showDirectoryPicker({
-                        mode: "readwrite",
-                        startIn: "documents"
-                    });
+                const parentHandle = await window.showDirectoryPicker({
+                    mode: "readwrite",
+                    startIn: "documents"
+                });
 
                 pickBtn.disabled = true;
-                progressEl.style.display = "block";
-                progressInner.style.width = "0%";
+                progressWrap.style.display = "block";
+                $("progressFill").style.width = "0%";
+                $("progressPercent").textContent = "۰٪";
+                setStatus("در حال ایجاد فولدرها...", "info");
 
-                setStatus(
-                    "در حال ایجاد فولدرها...",
-                    "info"
-                );
-
-                // ساخت فولدر اصلی سال
-                const yearFolder =
-                    await createFolder(
-                        parentHandle,
-                        String(year)
-                    );
-
-                const monthDays =
-                    getMonthDays(year);
-
-                const totalDays =
-                    monthDays.reduce(
-                        (sum, days) => sum + days,
-                        0
-                    );
-
+                const yearFolder = await createFolder(parentHandle, String(year));
+                const monthDays = getMonthDays(year);
+                const totalDays = monthDays.reduce((s, d) => s + d, 0);
                 let processed = 0;
 
-                // ساخت فولدر ماه‌ها و روزها
                 for (let month = 1; month <= 12; month++) {
-                    const monthFolderName =
-                        `${String(month).padStart(2, "0")}_${monthNames[month - 1]}`;
+                    const monthFolderName = `${String(month).padStart(2, "0")}_${monthNames[month - 1]}`;
+                    const monthFolder = await createFolder(yearFolder, monthFolderName);
+                    const daysInMonth = monthDays[month - 1];
 
-                    const monthFolder =
-                        await createFolder(
-                            yearFolder,
-                            monthFolderName
-                        );
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const dayName = getPersianDayName(year, month, day);
+                        const dateText = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                        const dayFolder = await createFolder(monthFolder, `${dateText}_${dayName}`);
 
-                    const daysInMonth =
-                        monthDays[month - 1];
-
-                    for (
-                        let day = 1;
-                        day <= daysInMonth;
-                        day++
-                    ) {
-                        const dayName =
-                            getPersianDayName(
-                                year,
-                                month,
-                                day
-                            );
-
-                        const dateText =
-                            `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-
-                        const dayFolderName =
-                            `${dateText}_${dayName}`;
-
-                        const dayFolder =
-                            await createFolder(
-                                monthFolder,
-                                dayFolderName
-                            );
-
-                        // زیرپوشه‌های هر روز
-                        await createFolder(
-                            dayFolder,
-                            "کارهای انجام شده"
-                        );
-
-                        await createFolder(
-                            dayFolder,
-                            "کارهای در دست اقدام"
-                        );
+                        await createFolder(dayFolder, "کارهای انجام شده");
+                        await createFolder(dayFolder, "کارهای در دست اقدام");
 
                         processed++;
-
-                        updateProgress(
-                            processed,
-                            totalDays
-                        );
-
-                        /*
-                         * اجازه می‌دهد نوار پیشرفت در مرورگر
-                         * به‌درستی به‌روزرسانی شود.
-                         */
-                        await new Promise(resolve =>
-                            setTimeout(resolve, 0)
-                        );
+                        updateProgress(processed, totalDays);
+                        await new Promise(resolve => setTimeout(resolve, 0));
                     }
                 }
 
-                progressInner.style.width = "100%";
-
-                setStatus(
-                    "✅ همه‌ی فولدرها با موفقیت ساخته شدند.",
-                    "done"
-                );
-
+                $("progressFill").style.width = "100%";
+                $("progressPercent").textContent = "۱۰۰٪";
+                setStatus("✅ همه فولدرها با موفقیت ساخته شدند.", "done");
                 pickBtn.disabled = false;
 
             } catch (error) {
                 if (error.name === "AbortError") {
-                    setStatus(
-                        "انتخاب پوشه لغو شد.",
-                        "error"
-                    );
+                    setStatus("انتخاب پوشه لغو شد.", "error");
                 } else {
                     console.error(error);
-
-                    setStatus(
-                        `خطا: ${error.message || error}`,
-                        "error"
-                    );
+                    setStatus(`خطا: ${error.message || error}`, "error");
                 }
-
                 pickBtn.disabled = false;
-                progressEl.style.display = "none";
+                progressWrap.style.display = "none";
             }
         }
 
-        // تابع ارسال پیشنهاد از طریق ایمیل
+        // ----------------------------------------------------------
+        // ارسال پیشنهاد با ایمیل
+        // ----------------------------------------------------------
         function sendSuggestion() {
-            const suggestionEl =
-                document.getElementById("suggestion");
-
-            const suggestionStatus =
-                document.getElementById("suggestionStatus");
-
-            const message =
-                suggestionEl.value.trim();
+            const suggestionEl = $("suggestion");
+            const statusEl = $("suggestionStatus");
+            const message = suggestionEl.value.trim();
 
             if (!message) {
-                suggestionStatus.style.color = "#e74c3c";
-                suggestionStatus.textContent =
-                    "لطفاً ابتدا پیشنهاد یا نظر خود را وارد کنید.";
+                statusEl.style.color = "#ef4444";
+                statusEl.textContent = "لطفاً ابتدا پیشنهاد یا نظر خود را وارد کنید.";
                 return;
             }
 
-            // ایمیل مقصد
-            const receiverEmail =
-                "mosayeb872@gmail.com";
+            const receiverEmail = "mosayeb872@gmail.com";
+            const subject = encodeURIComponent("پیشنهاد درباره برنامه ساخت فولدرهای شمسی");
+            const body = encodeURIComponent("سلام\n\nپیشنهاد یا نظر کاربر:\n\n" + message);
 
-            const subject =
-                encodeURIComponent("پیشنهاد درباره برنامه ساخت فولدرهای شمسی");
+            window.location.href = `mailto:${receiverEmail}?subject=${subject}&body=${body}`;
 
-            const body =
-                encodeURIComponent(
-                    "سلام\n\n" +
-                    "پیشنهاد یا نظر کاربر:\n\n" +
-                    message
-                );
-
-            window.location.href =
-                `mailto:${receiverEmail}?subject=${subject}&body=${body}`;
-
-            suggestionStatus.style.color = "#27ae60";
-            suggestionStatus.textContent =
-                "در حال بازکردن برنامه‌ی ایمیل...";
+            statusEl.style.color = "#10b981";
+            statusEl.textContent = "در حال بازکردن برنامه ایمیل...";
         }
 
-        // اتصال دکمه به تابع اصلی
-        document
-            .getElementById("pickBtn")
-            .addEventListener(
-                "click",
-                pickAndCreate
-            );
+        // ----------------------------------------------------------
+        // تغییر تم
+        // ----------------------------------------------------------
+        function toggleTheme() {
+            const body = document.body;
+            const current = body.getAttribute("data-theme") === "dark" ? "dark" : "light";
+            const next = current === "dark" ? "light" : "dark";
+            body.setAttribute("data-theme", next);
 
-        // -----------------------------------------------------
-        // تست خودکار تاریخ‌های مهم
-        // -----------------------------------------------------
+            // ذخیره در localStorage
+            localStorage.setItem("theme", next);
 
-        console.log(
-            "1404/01/01:",
-            getPersianDayName(1404, 1, 1)
-        );
+            // آیکون‌ها
+            if (next === "dark") {
+                $("themeIconLight").style.display = "none";
+                $("themeIconDark").style.display = "";
+            } else {
+                $("themeIconLight").style.display = "";
+                $("themeIconDark").style.display = "none";
+            }
+        }
 
-        console.log(
-            "1405/01/01:",
-            getPersianDayName(1405, 1, 1)
-        );
+        // خواندن تم ذخیره‌شده هنگام ورود
+        (function initTheme() {
+            const saved = localStorage.getItem("theme");
+            if (saved === "dark") {
+                document.body.setAttribute("data-theme", "dark");
+                $("themeIconLight").style.display = "none";
+                $("themeIconDark").style.display = "";
+            }
+        })();
 
-        console.log(
-            "1406/01/01:",
-            getPersianDayName(1406, 1, 1)
-        );
+        // اتصال رویدادها
+        $("pickBtn").addEventListener("click", pickAndCreate);
     </script>
-
 </body>
 </html>
