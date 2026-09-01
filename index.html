@@ -149,7 +149,6 @@
         }
 
         .theme-toggle:hover { transform: translateY(-2px); }
-
         .theme-toggle svg { width: 18px; height: 18px; }
 
         /* ==================== انتخاب نوع تقویم ==================== */
@@ -483,9 +482,7 @@
         /* ==================== موبایل ==================== */
         @media (max-width: 860px) {
             .layout { grid-template-columns: 1fr; }
-            main { order: 2; }
             .app-header { flex-direction: column; }
-
             .main-card { padding: 1.8rem 1.2rem; border-radius: 18px; }
         }
     </style>
@@ -498,18 +495,21 @@
         <header class="app-header">
             <div class="logo">
                 <div class="logo-icon">📁</div>
-                <span>سازنده فولدر سال</span>
+                <div>
+                    <span>سازنده فولدر سال</span>
+                    <div style="font-size:.75rem;color:var(--text-secondary);font-weight:400;">
+                        ایده‌پرداز و نویسنده: مصیب خانی
+                    </div>
+                </div>
             </div>
 
             <div class="header-actions">
-                <!-- انتخاب تقویم -->
                 <div class="calendar-switch" id="calendarSwitch">
                     <button type="button" data-cal="jalali" class="active">شمسی</button>
                     <button type="button" data-cal="gregorian">میلادی</button>
                     <button type="button" data-cal="hijri">قمری</button>
                 </div>
 
-                <!-- دکمه تم -->
                 <button class="theme-toggle" onclick="toggleTheme()" title="تغییر تم">
                     <svg id="themeIconDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -616,6 +616,7 @@
                     </summary>
                     <div class="details-content">
                         <ul class="about-list">
+                            <li><strong>ایده‌پرداز و نویسنده:</strong> مصیب خانی</li>
                             <li><strong>تقویم‌ها:</strong> شمسی، میلادی، قمری</li>
                             <li><strong>ذخیره‌سازی:</strong> محلی و بدون ارسال داده به سرور</li>
                             <li><strong>مرورگر:</strong> Chrome یا Edge</li>
@@ -790,7 +791,6 @@
             if (cal === "gregorian") {
                 return getDayNameFromGregorianDate(year, month, day);
             }
-            // hijri
             const jdn = islamicToJdn(year, month, day);
             const g = jdnToGregorian(Math.floor(jdn));
             return getDayNameFromGregorianDate(g.year, g.month, g.day);
@@ -970,10 +970,7 @@
             }
         })();
 
-        // اتصال دکمه اصلی
         $("pickBtn").addEventListener("click", pickAndCreate);
-
-        // مقدار اولیه
         setCalendar("jalali");
     </script>
 </body>
