@@ -1,0 +1,23 @@
+{
+  "name": "سازنده فولدر سال",
+  "short_name": "فولدر سال",
+  "description": "ساخت خودکار فولدرهای سال بر اساس تقویم شمسی، میلادی و قمری",
+  "start_url": "./",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "fa",
+  "theme_color": "#6c63ff",
+  "background_color": "#f0f4ff",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
