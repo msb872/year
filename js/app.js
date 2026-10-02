@@ -1031,13 +1031,26 @@ async function createFolder(
     parentHandle,
     folderName
 ) {
+    const safeFolderName = String(folderName)
+        .replace(/[\u200B\u200C\u200D\uFEFF]/g, " ")
+        .replace(/[<>:"/\\|?*]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+    if (!safeFolderName) {
+        throw new Error(
+            "نام پوشه پس از پاک‌سازی خالی است."
+        );
+    }
+
     return parentHandle.getDirectoryHandle(
-        folderName,
+        safeFolderName,
         {
             create: true
         }
     );
 }
+
 
 function showSummary(
     calendar,
